@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Animeto",
+  "description": "A premium Indonesian anime streaming platform offering high-quality video, fast servers, and an immersive dark mode viewing experience.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

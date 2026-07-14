@@ -1,0 +1,46 @@
+{
+  "collections": {
+    "animes": {
+      "fields": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "rating": { "type": "string" },
+        "episodes": { "type": "number" },
+        "status": { "type": "string" },
+        "studio": { "type": "string" },
+        "genres": { "type": "array", "items": { "type": "string" } },
+        "image": { "type": "string" },
+        "synopsis": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "isPopular": { "type": "boolean" },
+        "comments": { "type": "array" }
+      }
+    },
+    "users": {
+      "fields": {
+        "email": { "type": "string" },
+        "password": { "type": "string" },
+        "username": { "type": "string" },
+        "avatarBg": { "type": "string" },
+        "role": { "type": "string" },
+        "isBlocked": { "type": "boolean" }
+      }
+    },
+    "settings": {
+      "fields": {
+        "metaTitle": { "type": "string" },
+        "metaDesc": { "type": "string" },
+        "streamServer": { "type": "string" },
+        "maintenanceMode": { "type": "string" },
+        "showBannerAd": { "type": "boolean" },
+        "showPopunderAd": { "type": "boolean" }
+      }
+    },
+    "watchlists": {
+      "fields": {
+        "userEmail": { "type": "string" },
+        "animeIds": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

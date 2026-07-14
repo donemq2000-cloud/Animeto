@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(email) {
+      return isSignedIn() && request.auth.token.email == email;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'donemq2000@gmail.com' ||
+        request.auth.token.email == 'admin@nekonime.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.token.email)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.token.email)).data.role == 'Admin')
+      );
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Animes Collection rules
+    match /animes/{animeId} {
+      allow read: if true;
+      // Admins can write everything, logged in users can add comments. Also allow seeding if not seeded yet.
+      allow write: if (isSignedIn() && (
+        isAdmin() ||
+        (resource != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['comments']))
+      )) || !exists(/databases/$(database)/documents/animes/mecha-strike-origin);
+    }
+
+    // Users Collection rules
+    match /users/{email} {
+      allow read: if true; // Read is allowed for comment name/avatar rendering
+      // Allow write for owner, admin, or during initial seeding
+      allow write: if (isSignedIn() && (isOwner(email) || isAdmin())) || !exists(/databases/$(database)/documents/users/admin@nekonime.com);
+    }
+
+    // Settings Collection rules
+    match /settings/{settingsId} {
+      allow read: if true;
+      // Allow write for admin or during initial seeding
+      allow write: if (isSignedIn() && isAdmin()) || (settingsId == 'system' && !exists(/databases/$(database)/documents/settings/system));
+    }
+
+    // Watchlists Collection rules
+    match /watchlists/{email} {
+      allow read, write: if isSignedIn() && (request.auth.token.email == email || isAdmin());
+    }
+  }
+}

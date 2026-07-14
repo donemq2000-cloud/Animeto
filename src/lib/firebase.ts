@@ -22,7 +22,22 @@ import {
 } from 'firebase/auth';
 import { Anime, User, SystemSettings, Comment } from '../types';
 import { INITIAL_ANIME_DATABASE, DEFAULT_USERS, INITIAL_SYSTEM_SETTINGS } from '../data';
-import firebaseConfig from '@/firebase-applet-config.json';
+const firebaseConfig: {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  firestoreDatabaseId?: string;
+} = {
+  apiKey: "AIzaSyAxZkobhWA83pZCEEaKTIYltR6l3thUEVM",
+  authDomain: "gen-lang-client-0321820300.firebaseapp.com",
+  projectId: "gen-lang-client-0321820300",
+  storageBucket: "gen-lang-client-0321820300.firebasestorage.app",
+  messagingSenderId: "662555381867",
+  appId: "1:662555381867:web:189db809e752fc2a43212e"
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -125,8 +140,12 @@ export async function signInWithGoogle(): Promise<User> {
     
     await saveUser(newUser);
     return newUser;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Firebase Auth] Google Sign-In failed:', error);
+    if (error && (error.code === 'auth/unauthorized-domain' || (error.message && error.message.includes('unauthorized-domain')))) {
+      const hostname = window.location.hostname;
+      throw new Error(`Domain ini (${hostname}) belum diotorisasi untuk Google Sign-In di proyek Firebase Anda. Harap masuk ke Firebase Console, buka menu Authentication > Settings > Authorized domains, dan tambahkan "${hostname}" ke daftar domain yang diizinkan. Link konfigurasi: https://console.firebase.google.com/project/${firebaseConfig.projectId}/authentication/settings`);
+    }
     throw error;
   }
 }
